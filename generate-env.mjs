@@ -12,7 +12,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const envConfigFile = `
 export const environment = {
   production: ${isProd},
-  apiUrl: '${process.env.API_URL || 'http://localhost:8000'}',
+  apiUrl: '${process.env.API_URL || 'http://localhost:8000/api/v1'}',
 };
 `;
 
