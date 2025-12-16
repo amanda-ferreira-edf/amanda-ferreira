@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "install": "npm install --force",
     "prestart": "node --experimental-specifier-resolution=node generate-env.mjs",
     "start": "ng serve",
     "prebuild": "node --experimental-specifier-resolution=node generate-env.mjs",
