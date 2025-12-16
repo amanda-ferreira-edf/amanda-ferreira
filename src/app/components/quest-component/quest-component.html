@@ -1,0 +1,116 @@
+<div class="flex flex-col mb-8">
+    <div class="flex flex-row justify-between items-end">
+        <label [for]="'q' + quest.questionId" class="font-bold gap-0.5"> {{quest.questionText}}</label>
+        @if (admin) {
+        <div class="flex gap-2">
+            <p-button icon="mdi mdi-pencil" size="small" severity="warn" (click)="edit()"></p-button>
+        </div>
+        }
+    </div>
+    <span class="text-sm">{{quest.questionSubtext}}</span>
+    @if(quest.typeResponse === TypeResponse.text && !quest.multipleChoice) {
+    <textarea [id]="'q' + quest.questionId" pTextarea [(ngModel)]="value" (ngModelChange)="changeModel()" (blur)="onBlur()"></textarea>
+    }
+    @if(quest.typeResponse === TypeResponse.date) {
+    <p-date-picker [name]="'q' + quest.questionId" [(ngModel)]="value" inputStyleClass="w-full"
+        (ngModelChange)="changeModel()" (ngModelChange)="onBlur()" dataType="string" dateFormat="dd/mm/yy"></p-date-picker>
+    }
+    @if(quest.typeResponse === TypeResponse.number) {
+    <p-inputNumber [name]="'q' + quest.questionId" [(ngModel)]="value" (ngModelChange)="changeModel()" (onBlur)="onBlur(value.toString())"></p-inputNumber>
+    }
+    @if(quest.typeResponse === TypeResponse.boolean) {
+    <div class="flex gap-4">
+        <div>
+            <p-radioButton [name]="'q' + quest.questionId + 'true'" [(ngModel)]="value" [value]="'Sim'" [inputId]="'q' + quest.questionId + 'true'"
+                (ngModelChange)="changeModel()" (onBlur)="onBlur()"></p-radioButton>
+            <label [for]="'q' + quest.questionId + 'true'" class="ml-2">Sim</label>
+        </div>
+        <div>
+            <p-radioButton [name]="'q' + quest.questionId + 'false'" [(ngModel)]="value" [value]="'Não'" [inputId]="'q' + quest.questionId + 'false'"
+                (ngModelChange)="changeModel()" (onBlur)="onBlur()"></p-radioButton>
+            <label [for]="'q' + quest.questionId + 'false'" class="ml-2">Não</label>
+        </div>
+    </div>
+    }
+    @if(quest.multipleChoice == true) {
+    @if(quest.choices) {
+    @for (item of quest.choices; track $index) {
+    <div class="flex gap-4">
+        <p-checkbox [name]="'q' + quest.questionId + $index" [(ngModel)]="value" [value]="item"
+            [inputId]="'q' + quest.questionId + $index" (ngModelChange)="changeModel()" (onBlur)="onBlurMultipleChoices()"></p-checkbox>
+        <label [for]="'q'+ quest.questionId + $index">{{item}}</label>
+    </div>
+    }
+    }
+    <div class="flex gap-4 w-full">
+        <div class="flex gap-4 w-full">
+            <label [for]="'q'+ quest.questionId + 'outros'">Outros</label>
+            <textarea [id]="'q' + quest.questionId + 'outros'" rows="1" pTextarea class="w-full"
+                [(ngModel)]="valueOthersMultipleChoices" (ngModelChange)="changeModel()" (blur)="onBlurMultipleChoices()"></textarea>
+        </div>
+    </div>
+    }
+</div>
+@if(modalForm){
+<p-dialog header="Editar Pergunta" [modal]="true" [(visible)]="modal" [style]="{width: '50vw'}">
+    <div class="flex flex-col gap-5">
+        <div class="flex  flex-col  gap-4 mb-4">
+            <label for="pergunta" class="font-semibold ">Pergunta</label>
+            <input pInputText id="pergunta" class="flex-auto" autocomplete="off" [(ngModel)]="modalForm.questionText" />
+        </div>
+        <div class="flex flex-col  gap-4 mb-4">
+            <label for="subtitle" class="font-semibold ">Texto de Apoio</label>
+            <input pInputText id="subtitle" class="flex-auto" autocomplete="off" [(ngModel)]="modalForm.questionSubtext" />
+        </div>
+        <div class="flex flex-col  gap-4 mb-8">
+            <label for="tipoResposta" class="font-semibold ">Tipo de Resposta</label>
+            <div class="flex flex-wrap gap-2 justify-between w-full">
+                <div>
+                    <p-radio-button [(ngModel)]="modalForm.typeResponse" [value]="TypeResponse.text"
+                        [inputId]="TypeResponse.text"  (change)="changeValueTypeMultiple()"></p-radio-button>
+                    <label [for]="TypeResponse.text" class="ml-2">{{TypeResponse.text}}</label>
+                </div>
+                <div>
+                    <p-radio-button [(ngModel)]="modalForm.typeResponse" [value]="TypeResponse.boolean"
+                        [inputId]="TypeResponse.boolean"  (change)="changeValueTypeMultiple()"></p-radio-button>
+                    <label [for]="TypeResponse.boolean" class="ml-2">{{TypeResponse.boolean}}</label>
+                </div>
+                <div>
+                    <p-radio-button [(ngModel)]="modalForm.typeResponse" [value]="TypeResponse.date"
+                        [inputId]="TypeResponse.date"  (change)="changeValueTypeMultiple()"></p-radio-button>
+                    <label [for]="TypeResponse.date" class="ml-2">{{TypeResponse.date}}</label>
+                </div>
+                <div>
+                    <p-radio-button [(ngModel)]="modalForm.typeResponse" [value]="TypeResponse.number"
+                        [inputId]="TypeResponse.number"  (change)="changeValueTypeMultiple()"></p-radio-button>
+                    <label [for]="TypeResponse.number" class="ml-2">{{TypeResponse.number}}</label>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <label for="multipleChoice" class="font-semibold  text-nowrap">Opções Múltiplas</label>
+            <p-checkbox [(ngModel)]="modalForm.multipleChoice" [inputId]="'multipleChoice'" binary [disabled]="modalForm.typeResponse !== TypeResponse.text" (change)="changeValueTypeMultiple()"></p-checkbox>
+        </div>
+        @if(modalForm.multipleChoice) {
+        <div class="flex flex-col  gap-4 mb-4">
+            <label for="choices" class="font-semibold ">Opções</label>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-2 items-center">
+                @for(item of modalForm.choices; track $index) {
+                    <div>
+                        <input pInputText id="choices" class="flex-auto" autocomplete="off" [(ngModel)]="modalForm.choices![$index]"/>
+                        <p-button icon="mdi mdi-trash-can" size="small" severity="danger" (click)="modalForm.choices!.splice($index, 1)"></p-button>
+                    </div>
+                }
+                <div>
+                    <p-button icon="mdi mdi-plus" size="small" severity="success" (click)="modalForm.choices!.push('');"></p-button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    <div class="flex justify-end gap-2">
+        <p-button label="Cancel" severity="secondary" (click)="modal = false" />
+        <p-button label="Save" (click)="saveEdit()" severity="success" />
+    </div>
+</p-dialog>
+}

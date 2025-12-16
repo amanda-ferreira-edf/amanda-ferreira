@@ -1,0 +1,50 @@
+<div class="login-container">
+    <p-dialog [header]="isLoggin ? 'Login' : 'Cadastro'" [modal]="displayModal" [(visible)]="displayModal"
+        styleClass="w-full sm:w-[70%] lg:w-[30%]" (onHide)="displayModalChange.emit(false)">
+        @if(isLoggin){
+        <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="flex flex-col gap-8">
+                <div>
+                    <label>Email</label>
+                    <input pInputText formControlName="email" class="w-full" />
+                </div>
+                <div>
+                    <label>Senha</label>
+                    <input pInputText formControlName="password" type="password" class="w-full" />
+                    @if ((form.controls['email'].invalid && form.controls['email'].touched) ||
+                    form.controls['password'].invalid && form.controls['password'].touched ) {
+                    <p-message severity="error" text="Email ou senha inválidos"></p-message>
+                    }
+                </div>
+                <button pButton type="submit" label="Entrar" [loading]="loading" class="w-full"></button>
+                <button pButton type="button" label="Cadastrar" (click)="isLoggin = false" size="small" severity="secondary"></button>
+            </div>
+        </form>
+        }@else{
+        <form [formGroup]="formCadastro" (ngSubmit)="submitCadastro()">
+            <div class="flex flex-col gap-8">
+                <div>
+                    <label>Email</label>
+                    <input pInputText formControlName="email" class="w-full" />
+                </div>
+                <div>
+                    <label>Nome</label>
+                    <input pInputText formControlName="name" class="w-full" />
+                </div>
+                <div>
+                    <label>Senha</label>
+                    <input pInputText formControlName="password" type="password" class="w-full" />
+                </div>
+                <div>
+                    <label>Confirmar Senha</label>
+                    <input pInputText formControlName="confirmpassword" type="password" class="w-full" />
+                </div>
+                <button pButton type="submit" label="Cadastrar" [loading]="loading" class="w-full"></button>
+                <button pButton type="button" label="logar" size="small" (click)="isLoggin = true"
+                    severity="secondary"></button>
+            </div>
+        </form>
+        }
+    </p-dialog>
+</div>
+<p-toast></p-toast>

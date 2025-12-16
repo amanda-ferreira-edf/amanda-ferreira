@@ -1,0 +1,80 @@
+<div class="flex flex-col gap-8">
+    <div class="relative">
+        <div class="h-screen w-screen  bg-cover"
+            style="background-image: url('full-shot-woman-training-with-laptop.png');">
+            <div class="relative pt-20 z-10 h-full flex flex-col">
+                <div class="items-center h-[17%] w-full mb">
+                    <div class="flex gap-2 flex-col sm:flex-row  w-full justify-center">
+                        <span
+                            class="h-auto w-auto text-[clamp(8px,2vw,22px)] text-[#E1DCCA] self-center text-nowrap">Amanda
+                            Ferreira I
+                            Profissional de
+                            Educação Física</span>
+                        <span
+                            class="block w-1/4 overflow-hidden whitespace-nowrap text-clip text-[clamp(8px,2vw,22px)] self-center"
+                            style="color: #E1DCCA;">
+                            ─────────────────────────────────────────────────────────────────────────────
+                        </span>
+                        <span
+                            class="h-auto w-auto text-[clamp(8px,2vw,22px)] text-[#E1DCCA] self-center text-nowrap">CREF:
+                            022035-G/BA</span>
+                    </div>
+                </div>
+                <div class="flex h-[83%] w-min flex-col items-center gap-8 self-center">
+                    <div class="flex w-min flex-col items-center gap-8">
+                        <div class="flex flex-row justify-between">
+                            <span class="text-[clamp(20px,3vw,64px)] font-bold text-white whitespace-nowrap ">Anamnese
+                                feminina</span>
+                        </div>
+                        <span class="text-[clamp(16px,2vw,24px)]  text-white text-center">Aqui tem algumas perguntas bem
+                            importantes para a
+                            personalização do seu atendimento ;)</span>
+                    </div>
+                    <div [style]="{'display': loggedDisplay}">
+                        <p-button label="Entrar"
+                            [style]="{'font-size': 'clamp(16px,2vw,24px)', 'padding': '1rem', 'background-color': '#E1DCCA', 'border': '#E1DCCA', 'color': '#000000'}"
+                            (click)="displayModalLogin=true">
+                        </p-button>
+                    </div>
+                    <div [style]="{'display': loggedDisplay}">
+                        <app-login-with-google></app-login-with-google>
+                    </div>
+                    <div [style]="{'display': loggedDisplayFalse}">
+                        <p-button label="Iniciar"
+                            [style]="{'font-size': 'clamp(16px,2vw,24px)', 'padding': '1rem', 'background-color': '#E1DCCA', 'border': '#E1DCCA', 'color': '#000000'}"
+                            (click)="smoothScroll('Anamnese')">
+                        </p-button>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute inset-0 h-full w-full bg-black/30 z-0"></div>
+        </div>
+    </div>
+    <app-login-modal [(displayModal)]="displayModalLogin"></app-login-modal>
+    <div id="Anamnese" class="w-full md:w-[70%] xl:w-[50%] flex justify-center self-center min-h-[98vh]" [style]="{'display': loggedDisplayFalse}">
+        <p-card class="w-full">
+            <div class="flex justify-between">
+                <span class="p-card-title">Anamnese Feminina</span>
+                @if(admin){
+                <app-admin-quests [questsID]="questsID()" (updateQuest)="onUpdateQuest($event)"></app-admin-quests>
+                }
+            </div>
+            <p class="mb-1">
+                A anamnese é um questionário com algumas perguntas para que eu consiga traçar seu perfil e desenvolver
+                seu treinamento da forma mais personalizada possível. Dedique um tempo para responder as perguntas com
+                atenção, todas elas são muito importantes!
+            </p>
+            <p class="font-bold mb-1">
+                Amanda Ferreira - Profissional de Educação Física | CREF: 022035-G/BA
+            </p>
+            @if(questsFemale().length > 0){
+            <form action="">
+                @for (quest of questsFemale(); track quest.questionId) {
+                <app-quest-component [quest]="quest" (response)="onResponse($event)"
+                    (updateQuest)="onUpdateQuest($event)"></app-quest-component>
+                }
+            </form>
+            }
+        </p-card>
+    </div>
+</div>
