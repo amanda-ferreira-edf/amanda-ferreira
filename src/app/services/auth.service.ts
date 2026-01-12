@@ -3,22 +3,26 @@ import { Injectable, signal } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
 import { UserDTO } from "../models/userDTO";
 import { environment } from "../../environments/environment";
+import { EnvService } from "./env.service";
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private _userLogged = new BehaviorSubject<UserDTO|null>(null);
     public userLogged$ = this._userLogged.asObservable();
-    constructor(private http: HttpClient) { }
+    apiUrl
+    constructor(private http: HttpClient, private env: EnvService) {
+        this.apiUrl = this.env.get('API_URL') || 'http://localhost:8000/api/v1';
+     }
 
     loginAuth2(response: any): Observable<UserDTO> {
         let formData = new FormData();
         formData.append('credential', response.credential)
-        return this.http.post<UserDTO>(`${environment.apiUrl}/auth/google`, formData);
+        return this.http.post<UserDTO>(`${this.apiUrl}/auth/google`, formData);
 
     }
     login(user: UserDTO): Observable<UserDTO> {
-        return this.http.post<UserDTO>(`${environment.apiUrl}/auth`, user);
+        return this.http.post<UserDTO>(`${this.apiUrl}/auth`, user);
     }
     logout() {
         localStorage.removeItem('userLogged');
@@ -45,6 +49,6 @@ export class AuthService {
             account_google: false,
             sended: false
         }
-        return this.http.post<UserDTO>(`${environment.apiUrl}/user`, userDTO);
+        return this.http.post<UserDTO>(`${this.apiUrl}/user`, userDTO);
     }
 }
