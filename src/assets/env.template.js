@@ -1,4 +1,3 @@
-// env.js
-window["__env"] = {
-  API_URL: "http://localhost:8000", // valor default local
+window.__env = {
+  API_URL: "${API_URL}",
 };
