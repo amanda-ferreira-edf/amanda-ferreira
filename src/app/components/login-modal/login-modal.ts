@@ -9,6 +9,7 @@ import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { LoginWithGoogle } from "../login-with-google/login-with-google";
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-modal',
@@ -38,7 +39,8 @@ export class LoginModal {
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -79,6 +81,7 @@ export class LoginModal {
             });
             this.loading = false;
             this.displayModalChange.emit(false);
+            this.router.navigate(['']);
           }
         },
         error: (err) => {
