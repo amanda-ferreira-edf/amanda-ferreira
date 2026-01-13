@@ -18,12 +18,12 @@ export class FemaleAnamneseQuests {
   getQuests(): Observable<QuestsDTO[]> {
     let params = new HttpParams();
     params = params.append('question_list_id', '1');
-    return this.http.get<QuestsDTO[]>(`${environment.apiUrl}/questions`, { params: params });
+    return this.http.get<QuestsDTO[]>(`${this.apiUrl}/questions`, { params: params });
   }
 
   updateFemalesQuestsId(femalesQuestsId: number[]): Observable<{ question_list_id: number, question_id: string }> {
     let body = { question_list_id: 1, question_id: femalesQuestsId.join(',') };
-    return this.http.put<{ question_list_id: number, question_id: string }>(`${environment.apiUrl}/update-question-list`, body);
+    return this.http.put<{ question_list_id: number, question_id: string }>(`${this.apiUrl}/update-question-list`, body);
   }
 
 }
