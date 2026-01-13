@@ -5,13 +5,17 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AnswerDTO } from '../models/answerDTO';
 import { environment } from "../../environments/environment";
+import { EnvService } from './env.service';
 @Injectable(
     {
         providedIn: 'root'
     }
 )
 export class QuestService {
-    constructor(private http: HttpClient) { }
+        apiUrl
+        constructor(private http: HttpClient, private env: EnvService) {
+            this.apiUrl = this.env.get('API_URL') || 'http://localhost:8000/api/v1';
+         }
 
     updateQuests(updatedQuest: QuestsDTO): Observable<QuestsDTO> {
         return this.http.patch<QuestsDTO>(`${environment.apiUrl}/update-question`, updatedQuest);
