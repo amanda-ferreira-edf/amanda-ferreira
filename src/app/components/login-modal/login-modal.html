@@ -1,5 +1,5 @@
 <div class="login-container">
-    <p-dialog [header]="isLoggin ? 'Login' : 'Cadastro'" [modal]="displayModal" [(visible)]="displayModal"
+    <p-dialog [header]="isLoggin ? 'Login' : 'Cadastro'" [modal]="true" [(visible)]="displayModal"
         styleClass="w-full sm:w-[70%] lg:w-[30%]" (onHide)="displayModalChange.emit(false)">
         @if(isLoggin){
         <form [formGroup]="form" (ngSubmit)="submit()">

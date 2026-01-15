@@ -40,7 +40,7 @@ import { AnswerDTO } from '../../models/answerDTO';
 export class FemaleAnamnese implements OnInit {
   questsFemale = signal<QuestsDTO[]>([]);
   questsID = signal<number[]>([]);
-  admin = true;
+  admin = false;
   displayModalLogin = false;
   loggedDisplay = 'block';
   loggedDisplayFalse = 'none';
@@ -60,6 +60,7 @@ export class FemaleAnamnese implements OnInit {
       if (userLogged) {
         this.loggedDisplayFalse = 'block';
         this.loggedDisplay = 'none';
+        this.admin = userLogged?.role === 'admin';
         this.getQuests();
       } else {
         this.loggedDisplayFalse = 'none';
@@ -79,7 +80,7 @@ export class FemaleAnamnese implements OnInit {
   }
 
   getAnswers() {
-    this.quests.getAnswers(this.authService.getUserLogged()!.user.idUser).subscribe((answer: AnswerDTO[]) => {
+    this.quests.getAnswers(this.authService.getUserLogged()!.idUser).subscribe((answer: AnswerDTO[]) => {
       this.questsFemale().forEach((quest: any) => {
         answer.forEach((ans: any) => {
           if (quest.questionId == ans.question?.questionId) {
@@ -118,7 +119,8 @@ export class FemaleAnamnese implements OnInit {
 
   onUpdateQuest(event?: any) {
     this.femaleAnamneseQuests.updateFemalesQuestsId(event ?? this.questsID()).subscribe((response: any) => {
-      this.getQuests()
+      this.getQuests();
+      this.getAnswers();
     });
   }
 

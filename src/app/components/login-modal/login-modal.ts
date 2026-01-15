@@ -80,8 +80,8 @@ export class LoginModal {
               detail: 'Você entrou no sistema'
             });
             this.loading = false;
-            this.displayModalChange.emit(false);
-            this.router.navigate(['']);
+            this.displayModal = false;
+            this.displayModalChange.emit(this.displayModal);
           }
         },
         error: (err) => {

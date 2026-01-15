@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { QuestsDTO, TypeResponse } from '../../models/questsDTO';
 import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
@@ -29,7 +29,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './quest-component.html',
   styleUrl: './quest-component.css',
 })
-export class QuestComponent implements OnChanges {
+export class QuestComponent implements OnChanges, OnInit {
 
   @Input({ required: true }) quest!: QuestsDTO;
   @Output() response = new EventEmitter<any>();
@@ -37,7 +37,7 @@ export class QuestComponent implements OnChanges {
   TypeResponse = TypeResponse;
   value: any;
   valueOthersMultipleChoices: any;
-  admin = true;
+  admin = false;
   // modal
   modal = false;
   modalForm!: QuestsDTO;
@@ -56,6 +56,13 @@ export class QuestComponent implements OnChanges {
         }
       }
     }
+  }
+  ngOnInit(): void {
+    this.authService.userLogged$.subscribe((userLogged: any) => {
+      if (userLogged) {
+        this.admin = userLogged?.role === 'admin';
+      }
+    });
   }
   changeModel() {
     if (this.quest.multipleChoice == true && this.valueOthersMultipleChoices) {

@@ -63,7 +63,7 @@ export class AdminQuests {
           this.allQuests = this.sourceQuests
         }
       });
-      
+
     })
   }
 
@@ -72,24 +72,15 @@ export class AdminQuests {
     this.getAllQuests();
   }
   handleMoveAllToTarget(event: any) {
-    const moved = Array.isArray(event.items) ? event.items : [event.items];
-    const movedIds = new Set(moved.map((m: any) => m.questionId));
-
-    // adiciona ao destino recriando o array
-    this.questsSelected = [...this.questsSelected, ...moved];
-    this.questsID = this.questsSelected.map((quest: any) => quest.questionId);
-
-    // remove do source recriando o array filtrando por id
-    this.allQuests = this.allQuests.filter((q: any) => !movedIds.has(q.questionId));
+    this.questsID = this.questsSelected.map(
+      (quest: any) => quest.questionId
+    );
   }
 
   handleMoveAllToSource(event: any) {
-    const moved = Array.isArray(event.items) ? event.items : [event.items];
-    const movedIds = new Set(moved.map((m: any) => m.questionId));
-
-    this.allQuests = [...this.allQuests, ...moved];
-    this.questsSelected = this.questsSelected.filter((q: any) => !movedIds.has(q.questionId));
-    this.questsID = this.questsSelected.map((quest: any) => quest.questionId);
+    this.questsID = this.questsSelected.map(
+      (quest: any) => quest.questionId
+    );
   }
 
   refresh() {

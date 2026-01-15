@@ -4,6 +4,7 @@ export type UserDTO = {
     idUser?: string;
     name: string;
     role: string;
-    access_token?: string 
+    sended?: boolean;
+    access_token?: string;
     account_google?: boolean
 }
