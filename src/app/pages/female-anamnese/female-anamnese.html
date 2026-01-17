@@ -68,13 +68,24 @@
                 Amanda Ferreira - Profissional de Educação Física | CREF: 022035-G/BA
             </p>
             @if(questsFemale().length > 0){
-            <form action="">
+            <form #form="ngForm" (ngSubmit)="sendForm(form)">
                 @for (quest of questsFemale(); track quest.questionId) {
-                <app-quest-component [quest]="quest" (response)="onResponse($event)"
-                    (updateQuest)="onUpdateQuest($event)"></app-quest-component>
+                    <app-quest-component [quest]="quest" (response)="onResponse($event)"
+                    (updateQuest)="onUpdateQuest($event)" [id]="quest.questionId"></app-quest-component>
                 }
+                <p-button label="Salvar" severity="success" class="w-full" type="submit" id="send"></p-button>
             </form>
             }
         </p-card>
     </div>
+    <p-toast></p-toast>
 </div>
+@if(onBottom()){
+    <div class="fixed bottom-5 right-7 z-50">
+        <p-button (click)="smoothScroll('Anamnese')" variant="text" [raised]="true" severity="contrast" rounded="true" icon="mdi mdi-chevron-up"></p-button>
+    </div>
+}@else{
+    <div class="fixed bottom-5 right-7 z-50">
+        <p-button (click)="smoothScroll('send')" variant="text" [raised]="true" severity="contrast" rounded="true" icon="mdi mdi-chevron-down"></p-button>
+    </div>
+}

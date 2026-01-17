@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { QuestsDTO, TypeResponse } from '../../models/questsDTO';
 import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -25,6 +25,9 @@ import { AuthService } from '../../services/auth.service';
     ButtonModule,
     DialogModule,
     InputTextModule
+  ],
+   viewProviders: [
+    { provide: ControlContainer, useExisting: NgForm }
   ],
   templateUrl: './quest-component.html',
   styleUrl: './quest-component.css',
@@ -99,8 +102,7 @@ export class QuestComponent implements OnChanges, OnInit {
   }
 
   onBlur(responseFormated?: string) {
-    console.log(responseFormated);
-    this.questService.addUpdateAnswer({ response: responseFormated ?? this.value ?? null, idUser: this.authService.getUserLogged()!.user.idUser, idQuestion: this.quest.questionId!, idAnswer: this.quest.idAnswer ?? null }).subscribe();
+    this.questService.addUpdateAnswer({ response: responseFormated ?? this.value ?? null, idUser: this.authService.getUserLogged().idUser, idQuestion: this.quest.questionId!, idAnswer: this.quest.idAnswer ?? null }).subscribe();
   }
 
   edit() {

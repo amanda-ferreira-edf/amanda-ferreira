@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { Component, OnInit, signal, effect, HostListener } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ImageModule } from 'primeng/image';
@@ -11,13 +11,15 @@ import { QuestComponent } from '../../components/quest-component/quest-component
 import { DialogModule } from 'primeng/dialog';
 import { PickListModule } from 'primeng/picklist';
 import { AdminQuests } from "../../components/admin-quests/admin-quests";
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { LoginWithGoogle } from "../../components/login-with-google/login-with-google";
 import { LoginModal } from "../../components/login-modal/login-modal";
 import { AuthService } from '../../services/auth.service';
 import { UserDTO } from '../../models/userDTO';
 import { QuestService } from '../../services/quest.service';
 import { AnswerDTO } from '../../models/answerDTO';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-female-anamnese',
   imports: [
@@ -32,20 +34,23 @@ import { AnswerDTO } from '../../models/answerDTO';
     PickListModule,
     AdminQuests,
     LoginModal,
-    LoginWithGoogle
+    LoginWithGoogle,
+    ToastModule
   ],
+  providers: [MessageService],
   templateUrl: './female-anamnese.html',
   styleUrl: './female-anamnese.css',
 })
 export class FemaleAnamnese implements OnInit {
   questsFemale = signal<QuestsDTO[]>([]);
   questsID = signal<number[]>([]);
+  onBottom = signal<boolean>(false);
   admin = false;
   displayModalLogin = false;
   loggedDisplay = 'block';
   loggedDisplayFalse = 'none';
   firstGetAnswers = true;
-  constructor(private femaleAnamneseQuests: FemaleAnamneseQuests, private authService: AuthService, private quests: QuestService) {
+  constructor(private femaleAnamneseQuests: FemaleAnamneseQuests, private authService: AuthService, private quests: QuestService, private messageService: MessageService) {
     effect(() => {
       let quests = this.questsFemale();  // <-- leitura do Signal
       if (this.firstGetAnswers && this.questsFemale().length > 0) {
@@ -124,4 +129,49 @@ export class FemaleAnamnese implements OnInit {
     });
   }
 
+  sendForm(form: NgForm) {
+    let firstInvalidName: string = "";
+
+    if (form.invalid) {
+      Object.entries(form.controls).forEach(([name, control]) => {
+        control.markAsTouched();
+        control.markAsDirty();
+
+        if (control.invalid && !firstInvalidName) {
+          firstInvalidName = name;
+        }
+      });
+
+      if (firstInvalidName) {
+        let nameRegex = firstInvalidName!.match(/\d+/)![0];
+        this.smoothScroll(nameRegex);
+      }
+
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Atenção',
+        detail: 'Preencha todos os campos'
+      });
+
+      return;
+    }
+    console.log("enviando");
+  }
+
+  validateResponses(): boolean {
+    let valid = true;
+    this.questsFemale().forEach(quest => {
+      if (!quest.response || quest.response == undefined) {
+        valid = false;
+        this.messageService.add({ severity: 'error', summary: 'Atenção', detail: `${quest.questionText} é obrigatorio` });
+      }
+    });
+    return valid
+  }
+
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+     this.onBottom.set(window.innerHeight + window.scrollY >= document.body.offsetHeight);
+  }
 }

@@ -75,6 +75,8 @@ export class AdminQuests {
     this.questsID = this.questsSelected.map(
       (quest: any) => quest.questionId
     );
+    const moved = Array.isArray(event.items) ? event.items : [event.items];
+    this.questsSelected = moved
   }
 
   handleMoveAllToSource(event: any) {
