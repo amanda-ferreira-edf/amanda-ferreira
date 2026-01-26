@@ -3,11 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { DarkModeToggle } from "./components/dark-mode-toggle/dark-mode-toggle";
 import { AuthService } from './services/auth.service';
 import { LogoutButton } from "./components/logout-button/logout-button";
-import { PrimeNG} from 'primeng/config';
+import { LoadingComponent } from './components/loading-component/loading-component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, DarkModeToggle, LogoutButton],
+  imports: [RouterOutlet, DarkModeToggle, LogoutButton, LoadingComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
