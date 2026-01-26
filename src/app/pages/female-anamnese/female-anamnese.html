@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-8">
+<div  class="flex flex-col gap-8">
     <div class="relative">
         <div class="h-screen w-screen  bg-cover"
             style="background-image: url('full-shot-woman-training-with-laptop.png');">
@@ -51,7 +51,7 @@
         </div>
     </div>
     <app-login-modal [(displayModal)]="displayModalLogin"></app-login-modal>
-    <div id="Anamnese" class="w-full md:w-[70%] xl:w-[50%] flex justify-center self-center min-h-[98vh]" [style]="{'display': loggedDisplayFalse}">
+    <div #toPrint id="Anamnese" class="w-full md:w-[70%] xl:w-[50%] flex justify-center self-center min-h-[98vh]" [style]="{'display': loggedDisplayFalse}">
         <p-card class="w-full">
             <div class="flex justify-between">
                 <span class="p-card-title">Anamnese Feminina</span>

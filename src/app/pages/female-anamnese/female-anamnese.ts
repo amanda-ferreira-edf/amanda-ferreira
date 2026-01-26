@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect, HostListener } from '@angular/core';
+import { Component, OnInit, signal, effect, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ImageModule } from 'primeng/image';
@@ -20,6 +20,27 @@ import { QuestService } from '../../services/quest.service';
 import { AnswerDTO } from '../../models/answerDTO';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { EmailService } from '../../services/email.service';
+
+(pdfMake as any).vfs = (pdfFonts as any).vfs;
+export interface Html2PdfOptions {
+  margin?: number | [number, number, number, number];
+  filename?: string;
+  image?: {
+    type?: 'jpeg' | 'png' | 'webp';
+    quality?: number;
+  };
+  html2canvas?: any;
+  jsPDF?: {
+    unit?: string;
+    format?: string | [number, number];
+    orientation?: 'portrait' | 'landscape';
+  };
+}
+
+
 @Component({
   selector: 'app-female-anamnese',
   imports: [
@@ -50,7 +71,9 @@ export class FemaleAnamnese implements OnInit {
   loggedDisplay = 'block';
   loggedDisplayFalse = 'none';
   firstGetAnswers = true;
-  constructor(private femaleAnamneseQuests: FemaleAnamneseQuests, private authService: AuthService, private quests: QuestService, private messageService: MessageService) {
+  @ViewChild('toPrint', { static: false }) toPrintElement!: ElementRef;
+  constructor(private femaleAnamneseQuests: FemaleAnamneseQuests, private authService: AuthService, private quests: QuestService,
+    private messageService: MessageService, private emailService: EmailService) {
     effect(() => {
       let quests = this.questsFemale();  // <-- leitura do Signal
       if (this.firstGetAnswers && this.questsFemale().length > 0) {
@@ -155,7 +178,91 @@ export class FemaleAnamnese implements OnInit {
 
       return;
     }
-    console.log("enviando");
+
+    let documentPDf = this.toPrint();
+    documentPDf.getBlob((doc: Blob) => {
+      this.emailService.sendEmailWithAttachment(
+        this.authService.getUserLogged()!.email,
+        this.authService.getUserLogged()!.name,
+        doc
+      ).subscribe({
+        next: (res: any) => {
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Formulário enviado com sucesso!' });
+          // this.authService.setSendedForm(true);
+        },
+        error: (err: any) => {
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao enviar formulário. Tente novamente mais tarde.' });
+        }
+      });
+    });
+  }
+
+  toPrint() {
+    let perguntas: any = [];
+
+    this.questsFemale().forEach((quest: any) => {
+      perguntas.push({
+        pergunta: quest.questionText,
+        resposta: quest.response ? quest.response.toString() : quest.response
+      })
+    })
+
+    const docDefinition: any = {
+      pageSize: 'A4',
+      pageMargins: [40, 40, 40, 40],
+      header: {text: `Amanda Ferreira I Profissional de Educação Física \n CREF: 022035-G/BA`, style: 'cabecalho'},
+      footer:{text: `Amanda Ferreira I Profissional de Educação Física \n CREF: 022035-G/BA`, style: 'cabecalho'},
+      content: [
+        { text: `Anamnese ${this.authService.getUserLogged()!.name}`, style: 'titulo' },
+        { text: `Data: ${new Date().toLocaleString()}`, style: 'subtitulo' },
+        ...perguntas.flatMap((q: any) => ([
+          { text: q.pergunta, style: 'pergunta' },
+          {
+            table: {
+              widths: ['*'],
+              body: [[
+                { text: q.resposta || ' ', style: 'resposta' }
+              ]]
+            },
+            layout: 'noBorders',
+            margin: [0, 0, 0, 5]
+          }
+        ]))
+      ],
+
+      styles: {
+        titulo: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 0],
+          alignment: 'center'
+        },
+        cabecalho: {
+          fontSize: 8,
+          margin: [0, 10, 0, 20],
+          alignment: 'center'
+        },
+        subtitulo: {
+          fontSize: 12,
+          margin: [0, 0, 0, 50],
+          alignment: 'center'
+        },
+        pergunta: {
+          fontSize: 12,
+          bold: true,
+          margin: [0, 0, 0, 4]
+        },
+        resposta: {
+          fontSize: 11,
+          margin: [4, 4, 4, 4]
+        }
+      },
+
+      defaultStyle: {
+        fontSize: 11
+      }
+    };
+    return pdfMake.createPdf(docDefinition);
   }
 
   validateResponses(): boolean {
@@ -172,6 +279,6 @@ export class FemaleAnamnese implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-     this.onBottom.set(window.innerHeight + window.scrollY >= document.body.offsetHeight);
+    this.onBottom.set(window.innerHeight + window.scrollY >= document.body.offsetHeight);
   }
 }
